@@ -25,6 +25,8 @@ class Board {
 	selected: Coordinate | null = null
 	activePlayer: "red" | "black" = "black"
 	highlights: Coordinate[] = []
+	activePieces: Piece[] = []
+	isGameOver: boolean = false
 
 	blocks: (Piece | null)[][] = [
 		[null, null, null, null, null, null, null, null],
@@ -46,6 +48,7 @@ class Board {
 		this.ctx = this.canvas.getContext("2d")!
 		this.initControl()
 		this.initPieces()
+		this.setActivePieces()
 
 		this.setStatus(`${this.activePlayer}'s turn`)
 	}
@@ -130,29 +133,35 @@ class Board {
 		}
 	}
 
-	renderPlayerSelect() {
+	setActivePieces() {
 		if (this.selected !== null) {
 			return
 		}
 
-		this.highlights = []
+		this.activePieces = []
 
 		for (let i = 0; i < this.blocks.length; i++) {
 			for (let j = 0; j < this.blocks[i].length; j++) {
 				const block = this.blocks[j][i]
 				if (this.activePlayer === "black" && block instanceof BlackPiece && block.hasValidMoves()) {
-					this.highlights.push(block.coordinate)
-				} else if(this.activePlayer=== "red" && block instanceof RedPiece && block.hasValidMoves()) {
-					this.highlights.push(block.coordinate)
+					this.activePieces.push(block)
+				} else if (this.activePlayer === "red" && block instanceof RedPiece && block.hasValidMoves()) {
+					this.activePieces.push(block)
 				}
 			}
 		}
 
+		const hasSkip = this.activePieces.some(piece => piece.canSkip())
+
+		if (hasSkip) {
+			this.activePieces = this.activePieces.filter(piece => piece.canSkip())
+		}
+
+		this.highlights = this.activePieces.map(piece => piece.coordinate)
 	}
 
 	render() {
 		this.renderBackground()
-		this.renderPlayerSelect()
 		this.renderHighlights()
 		this.renderBlocks()
 	}
@@ -167,15 +176,7 @@ class Board {
 			return
 		}
 
-		if (!piece.hasValidMoves()) {
-			return
-		}
-
-		if (this.activePlayer === "black" && piece instanceof RedPiece) {
-			return
-		}
-
-		if (this.activePlayer === "red" && piece instanceof BlackPiece) {
+		if (!this.activePieces.some(possible => possible === piece)) {
 			return
 		}
 
@@ -193,7 +194,6 @@ class Board {
 		}
 
 		if (!piece.validMoves().some((m) => (i === m.i && m.j === j))) {
-			console.log("not valid")
 			return
 		}
 
@@ -204,18 +204,22 @@ class Board {
 			}
 			this.remove(skipped)
 			piece.coordinate = { i, j }
+			this.blocks[j][i] = piece
+			this.remove(selected)
 
 			if (piece.canPromote()) {
 				piece.promote()
 			}
 
 			if (piece.canSkip()) {
-				this.selected = { i, j }
+				this.select({ i, j })
 			} else {
 				this.changePlayer()
 			}
 		} else {
 			piece.coordinate = { i, j }
+			this.blocks[j][i] = piece
+			this.remove(selected)
 
 			if (piece.canPromote()) {
 				piece.promote()
@@ -223,10 +227,6 @@ class Board {
 
 			this.changePlayer()
 		}
-
-
-		this.blocks[j][i] = piece
-		this.remove(selected)
 	}
 
 	remove({ i, j }: Coordinate) {
@@ -253,15 +253,22 @@ class Board {
 
 		const coordinate = { i, j }
 
-		console.log(this.selected)
-		console.log(this.activePlayer)
 		if (this.selected === null) {
 			this.select(coordinate)
 		} else {
 			this.move(coordinate)
 		}
 
+		this.setActivePieces()
+		this.checkGameOver()
 		this.render()
+	}
+
+	checkGameOver() {
+		if (this.activePieces.length === 0) {
+			this.isGameOver = true
+			this.setStatus(`${this.activePlayer === "red" ? "black" : "red"} wins`)
+		}
 	}
 
 	initControl() {
@@ -270,14 +277,14 @@ class Board {
 
 	initPieces() {
 		const pieces = [
-			["r", null, "r", null, "r", null, "r", null],
-			[null, "r", null, "r", null, "r", null, "r"],
-			["r", null, "r", null, "r", null, "r", null],
-			[null, null, null, null, null, null, null, null],
-			[null, null, null, null, null, null, null, null],
 			[null, "b", null, "b", null, "b", null, "b"],
 			["b", null, "b", null, "b", null, "b", null],
 			[null, "b", null, "b", null, "b", null, "b"],
+			[null, null, null, null, null, null, null, null],
+			[null, null, null, null, null, null, null, null],
+			["r", null, "r", null, "r", null, "r", null],
+			[null, "r", null, "r", null, "r", null, "r"],
+			["r", null, "r", null, "r", null, "r", null],
 		]
 
 		for (let j = 0; j < pieces.length; j++) {
@@ -302,8 +309,8 @@ class RedPiece implements Piece {
 	coordinate: Coordinate
 	board: Board
 	offsets: [number, number][] = [
-		[1, 1],
-		[-1, 1]
+		[1, -1],
+		[-1, -1]
 	]
 
 	constructor(board: Board, coordinate: Coordinate) {
@@ -312,7 +319,7 @@ class RedPiece implements Piece {
 	}
 
 	canPromote(): boolean {
-		return this.coordinate.j === 7
+		return this.coordinate.j === 0
 	}
 
 	promote() {
@@ -392,8 +399,8 @@ class BlackPiece implements Piece {
 	coordinate: Coordinate
 	board: Board
 	offsets: [number, number][] = [
-		[1, -1],
-		[-1, -1]
+		[1, 1],
+		[-1, 1]
 	]
 
 	constructor(board: Board, coordinate: Coordinate) {
@@ -402,7 +409,7 @@ class BlackPiece implements Piece {
 	}
 
 	canPromote(): boolean {
-		return this.coordinate.j === 0
+		return this.coordinate.j === 7
 	}
 
 	promote() {
