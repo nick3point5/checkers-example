@@ -97,12 +97,12 @@ export class RedPiece extends Piece {
 		const color = "#f00"
 		const promotionColor = "#f55"
 		const promotionRow = 0
-		const offsets: [number, number][] = [
+		const moves: [number, number][] = [
 			[1, -1],
 			[-1, -1]
 		]
 
-		super(board, coordinate, color, promotionColor, promotionRow, offsets)
+		super(board, coordinate, color, promotionColor, promotionRow, moves)
 	}
 }
 
@@ -111,11 +111,11 @@ export class BlackPiece extends Piece {
 		const color = "#000"
 		const promotionColor = "#333"
 		const promotionRow = 7
-		const offsets: [number, number][] = [
+		const moves: [number, number][] = [
 			[1, 1],
 			[-1, 1]
 		]
 
-		super(board, coordinate, color, promotionColor, promotionRow, offsets)
+		super(board, coordinate, color, promotionColor, promotionRow, moves)
 	}
 }
