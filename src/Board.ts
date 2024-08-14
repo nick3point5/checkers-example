@@ -63,10 +63,9 @@ export class Board {
 
 		let is_dark = true
 		for (let i = 0; i < this.blocks.length; i++) {
-			is_dark = i % 2 ? true : false
 			const row = this.blocks[i]
 			for (let j = 0; j < row.length; j++) {
-				this.ctx.fillStyle = is_dark ? color1 : color2
+				this.ctx.fillStyle = (i + j) % 2 !== 0 ? color1 : color2
 				const x = 2 + this.CELL_SIZE * i
 				const y = 2 + this.CELL_SIZE * j
 				const width = this.CELL_SIZE - 2
