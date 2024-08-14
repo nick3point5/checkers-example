@@ -1,7 +1,7 @@
 import { Board } from "./board"
-import { GameState, select } from "./gameState"
-import { move } from "./move"
-import { render } from "./render"
+import { GameState, select } from "./GameState"
+import { move } from "./Move"
+import { render } from "./Render"
 
 const board: Board = [
 	[0, 3, 0, 3, 0, 3, 0, 3],

@@ -1,5 +1,5 @@
-import { Coordinate, Board, getPiece, isOpponentPiece, Piece, setPiece } from "./board"
-import { GameState, select, unselect, Player, changePlayer, isActive } from "./gameState"
+import { Coordinate, Board, getPiece, Piece, setPiece, isOpponentPiece } from "./Board"
+import { GameState, select, unselect, Player, changePlayer, isActive } from "./GameState"
 
 export type Moves = Coordinate[]
 
@@ -18,7 +18,7 @@ export function getMoves(coordinate: Coordinate, board: Board): Moves {
 			j: coordinate.j + direction[1],
 		}
 
-		if (pieceHasSkip && canSkip(coordinate, board, direction)) {
+		if (pieceHasSkip && isDirectionSkip(coordinate, board, direction)) {
 			return {
 				i: move.i + direction[0],
 				j: move.j + direction[1],
@@ -111,7 +111,7 @@ function promote(coordinate: Coordinate, board: Board) {
 	}
 }
 
-function isSkip(coordinate: Coordinate, move: Coordinate) {
+function isMoveSkip(coordinate: Coordinate, move: Coordinate) {
 	const distance = Math.abs(coordinate.i - move.i) + Math.abs(coordinate.j - move.j)
 	return distance > 2
 }
@@ -156,7 +156,7 @@ function getDirections(piece: Piece): Direction[] {
 	}
 }
 
-function canSkip(coordinate: Coordinate, board: Board, direction: Direction) {
+function isDirectionSkip(coordinate: Coordinate, board: Board, direction: Direction) {
 	const piece = getPiece(coordinate, board)
 	if (piece === null) {
 		return false
@@ -196,7 +196,7 @@ function hasSkip(coordinate: Coordinate, board: Board) {
 
 	const directions = getDirections(piece)
 
-	return directions.some(direction => canSkip(coordinate, board, direction))
+	return directions.some(direction => isDirectionSkip(coordinate, board, direction))
 }
 
 export function move(gameState: GameState, target: Coordinate) {
@@ -223,7 +223,7 @@ export function move(gameState: GameState, target: Coordinate) {
 		promote(target, board)
 	}
 
-	if (isSkip(selected, target)) {
+	if (isMoveSkip(selected, target)) {
 		skip(selected, board, target)
 		if (hasSkip(target, board)) {
 			select(gameState, target)

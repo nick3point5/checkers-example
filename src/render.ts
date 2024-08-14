@@ -1,6 +1,6 @@
-import { Coordinate, Piece, Board } from "./board"
-import { GameState, getOtherPlayer, isGameOver, Player } from "./gameState"
-import { getMovablePieces, getMoves } from "./move"
+import { Coordinate, Piece, Board } from "./Board"
+import { GameState, getOtherPlayer, isGameOver, Player } from "./GameState"
+import { getMovablePieces, getMoves } from "./Move"
 
 function renderBackground(ctx: CanvasRenderingContext2D, width: number, height: number, size: number, board: Board) {
 	ctx.fillStyle = "#000"
