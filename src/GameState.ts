@@ -1,5 +1,5 @@
 import { Board, Coordinate, Piece } from "./Board"
-import { isMovable } from "./Move"
+import { getMovablePieces, isMovable } from "./Move"
 
 export type Player = "red" | "black"
 export type GameState = {

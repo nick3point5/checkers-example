@@ -1,4 +1,4 @@
-import { Board } from "./board"
+import { Board } from "./Board"
 import { GameState, select } from "./GameState"
 import { move } from "./Move"
 import { render } from "./Render"
