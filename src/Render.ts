@@ -36,12 +36,11 @@ function getColor(piece: Piece) {
 	}
 }
 
-function renderPiece(ctx: CanvasRenderingContext2D, size: number, coordinate: Coordinate, piece: Piece) {
+function renderPiece(ctx: CanvasRenderingContext2D, size: number, { i, j }: Coordinate, piece: Piece) {
 	if (piece === Piece.empty) {
 		return
 	}
 
-	const { i, j } = coordinate
 	const offset = size / 2
 	const x = offset + 1 + i * size
 	const y = offset + 1 + j * size
@@ -68,8 +67,8 @@ function coordinateToPixel({ i, j }: Coordinate, size: number) {
 	return { x: i * size, y: j * size }
 }
 
-function renderHighlight(ctx: CanvasRenderingContext2D, size: number, { i, j }: Coordinate) {
-	const { x, y } = coordinateToPixel({ i, j }, size)
+function renderHighlight(ctx: CanvasRenderingContext2D, size: number, coordinate: Coordinate) {
+	const { x, y } = coordinateToPixel(coordinate, size)
 
 	ctx.strokeStyle = "#f19f1c"
 	ctx.lineWidth = 4

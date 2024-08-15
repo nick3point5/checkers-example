@@ -37,7 +37,6 @@ function handleClick(event: MouseEvent, size: number, gameState: GameState) {
 		select(gameState, coordinate)
 	} else {
 		move(gameState, coordinate)
-
 	}
 
 	render(canvas, status, gameState)
