@@ -5,9 +5,9 @@ import { BlackPiece, RedPiece } from "./Piece"
 document.body.innerHTML = ('<h1 id="status"></h1><canvas id="board" width="640" height="640"></canvas>')
 HTMLCanvasElement.prototype.getContext = () => null
 
-let board = new Board(document)
+let board = new Board()
 beforeEach(() => {
-	board = new Board(document)
+	board = new Board()
 })
 
 test("board changePlayer", () => {
