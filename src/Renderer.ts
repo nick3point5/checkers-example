@@ -9,6 +9,7 @@ export class Renderer {
 	ctx: CanvasRenderingContext2D
 	canvas: HTMLCanvasElement
 	status: HTMLHeadingElement
+	crown: HTMLImageElement
 
 	constructor(document: Document) {
 		this.canvas = document.getElementById("board") as HTMLCanvasElement
@@ -16,6 +17,9 @@ export class Renderer {
 		this.width = this.canvas.width
 		this.height = this.canvas.height
 		this.ctx = this.canvas.getContext("2d")!
+
+		this.crown = new Image()
+		this.crown.src = "./src/assets/crown.png"
 	}
 
 	
@@ -41,11 +45,19 @@ export class Renderer {
 		}
 	}
 
+	drawCrown(piece: Piece) {
+		let { x, y } = this.coordinateToPixel(piece.coordinate)
+		x += 6
+		y += 6
+
+		this.ctx.drawImage(this.crown, x, y)
+	}
+
 	drawPiece(piece: Piece) {
-		const { i, j } = piece.coordinate
 		const offset = this.CELL_SIZE / 2
-		const x = offset + 1 + i * this.CELL_SIZE
-		const y = offset + 1 + j * this.CELL_SIZE
+		let { x, y } = this.coordinateToPixel(piece.coordinate)
+		x += offset
+		y += offset
 
 		this.ctx.fillStyle = piece.color
 		this.ctx.beginPath()
@@ -55,6 +67,10 @@ export class Renderer {
 		this.ctx.fill()
 		this.ctx.stroke()
 		this.ctx.closePath()
+		
+		if(piece.isKing) {
+			this.drawCrown(piece)
+		}
 	}
 
 	drawPieces(board: Board) {
@@ -93,11 +109,11 @@ export class Renderer {
 		}
 	}
 
-	draw(board: Board) {
+	drawBoard(board: Board) {
 		this.drawBackground(board)
 		this.drawHighlights(board.highlights)
 		this.drawPieces(board)
-		console.log(board.checkGameOver())
+
 		if (board.checkGameOver()) {
 			const winner = board.player === "red" ? "black" : "red"
 			this.setStatus(`${winner} wins`)

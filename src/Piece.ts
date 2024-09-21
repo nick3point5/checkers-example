@@ -4,19 +4,19 @@ import { Coordinate } from "./Coordinate"
 
 export class Piece {
 	color: string
-	promotionColor: string
 	promotionRow: number
 	coordinate: Coordinate
+	isKing: boolean
 	board: Board
 	moves: [number, number][]
 
-	constructor(board: Board, coordinate: Coordinate, color: string, promotionColor: string, promotionRow: number, moves: [number, number][]) {
+	constructor(board: Board, coordinate: Coordinate, color: string, promotionRow: number, moves: [number, number][]) {
 		this.board = board
 		this.coordinate = coordinate
 		this.color = color
-		this.promotionColor = promotionColor
 		this.promotionRow = promotionRow
 		this.moves = moves
+		this.isKing = false
 	}
 
 	canPromote(): boolean {
@@ -30,7 +30,7 @@ export class Piece {
 			[-1, -1],
 			[1, -1]
 		]
-		this.color = this.promotionColor
+		this.isKing = true
 	}
 
 	isPlayerPiece(coordinate: Coordinate) {
@@ -44,7 +44,6 @@ export class Piece {
 
 	validMoves(): Coordinate[] {
 		const coordinates = []
-
 		for (const move of this.moves) {
 			const jumpCoordinate = {
 				i: this.coordinate.i + move[0],
@@ -95,27 +94,25 @@ export class Piece {
 export class RedPiece extends Piece {
 	constructor(board: Board, coordinate: Coordinate) {
 		const color = "#f00"
-		const promotionColor = "#f55"
 		const promotionRow = 0
 		const moves: [number, number][] = [
 			[1, -1],
 			[-1, -1]
 		]
 
-		super(board, coordinate, color, promotionColor, promotionRow, moves)
+		super(board, coordinate, color, promotionRow, moves)
 	}
 }
 
 export class BlackPiece extends Piece {
 	constructor(board: Board, coordinate: Coordinate) {
 		const color = "#000"
-		const promotionColor = "#333"
 		const promotionRow = 7
 		const moves: [number, number][] = [
 			[1, 1],
 			[-1, 1]
 		]
 
-		super(board, coordinate, color, promotionColor, promotionRow, moves)
+		super(board, coordinate, color, promotionRow, moves)
 	}
 }

@@ -95,6 +95,28 @@ export class Board {
 		this.highlights = piece.validMoves()
 	}
 
+	skipMove(piece: Piece, selected: Coordinate, {i, j}: Coordinate) {
+		const skipped = {
+			i: (piece.coordinate.i - i) / 2 + i,
+			j: (piece.coordinate.j - j) / 2 + j
+		}
+
+		this.remove(skipped)
+		piece.coordinate = { i, j }
+		this.blocks[j][i] = piece
+		this.remove(selected)
+
+		if (piece.canPromote()) {
+			piece.promote()
+		}
+
+		if (piece.hasSkip()) {
+			this.select({ i, j })
+		} else {
+			this.changePlayer()
+		}
+	}
+
 	move({ i, j }: Coordinate) {
 		const selected = this.selected!
 		const piece = this.getPiece(selected)
@@ -108,25 +130,7 @@ export class Board {
 		}
 
 		if (piece.hasSkip()) {
-			const skipped = {
-				i: (piece.coordinate.i - i) / 2 + i,
-				j: (piece.coordinate.j - j) / 2 + j
-			}
-
-			this.remove(skipped)
-			piece.coordinate = { i, j }
-			this.blocks[j][i] = piece
-			this.remove(selected)
-
-			if (piece.canPromote()) {
-				piece.promote()
-			}
-
-			if (piece.hasSkip()) {
-				this.select({ i, j })
-			} else {
-				this.changePlayer()
-			}
+			this.skipMove(piece, selected, {i, j})
 		} else {
 			piece.coordinate = { i, j }
 			this.blocks[j][i] = piece

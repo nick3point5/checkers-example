@@ -1,4 +1,5 @@
 import { Board } from "./Board"
+import { Coordinate } from "./Coordinate"
 import { Renderer } from "./Renderer"
 
 export class Controller {
@@ -9,18 +10,10 @@ export class Controller {
 		this.board = board
 		this.renderer = renderer
 		this.initControl()
+		renderer.drawBoard(board)
 	}
 
-	handleClick = (event: MouseEvent) => {
-		let offset = this.renderer.canvas.getBoundingClientRect()
-		const x = event.clientX - offset.left
-		const y = event.clientY - offset.top
-
-		const i = Math.floor(x / this.renderer.CELL_SIZE)
-		const j = Math.floor(y / this.renderer.CELL_SIZE)
-
-		const coordinate = { i, j }
-
+	input(coordinate: Coordinate) {
 		if (this.board.selected === null) {
 			this.board.select(coordinate)
 		} else {
@@ -29,7 +22,20 @@ export class Controller {
 
 		this.board.setMovablePieces()
 
-		this.renderer.draw(this.board)
+		this.renderer.drawBoard(this.board)
+	}
+
+	handleClick = (event: MouseEvent) => {
+		const offset = this.renderer.canvas.getBoundingClientRect()
+		const x = event.clientX - offset.left
+		const y = event.clientY - offset.top
+
+		const i = Math.floor(x / this.renderer.CELL_SIZE)
+		const j = Math.floor(y / this.renderer.CELL_SIZE)
+
+		const coordinate = { i, j }
+
+		this.input(coordinate)
 	}
 
 	initControl() {
