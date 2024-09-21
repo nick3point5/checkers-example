@@ -6,11 +6,11 @@ export class Controller {
 	board: Board
 	renderer: Renderer
 
-	constructor(board: Board, renderer: Renderer) {
+	constructor(board: Board) {
 		this.board = board
-		this.renderer = renderer
+		this.renderer = new Renderer(document)
 		this.initControl()
-		renderer.drawBoard(board)
+		this.renderer.drawBoard(board)
 	}
 
 	input(coordinate: Coordinate) {

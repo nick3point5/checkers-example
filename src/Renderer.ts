@@ -3,15 +3,19 @@ import { Coordinate } from "./Coordinate"
 import { Piece } from "./Piece"
 
 export class Renderer {
+	static singleton: Renderer | null = null
 	CELL_SIZE = 80
-	width: number
-	height: number
-	ctx: CanvasRenderingContext2D
-	canvas: HTMLCanvasElement
-	status: HTMLHeadingElement
-	crown: HTMLImageElement
+	width!: number
+	height!: number
+	ctx!: CanvasRenderingContext2D
+	canvas!: HTMLCanvasElement
+	status!: HTMLHeadingElement
+	crown!: HTMLImageElement
 
 	constructor(document: Document) {
+		if (Renderer.singleton) {
+			return Renderer.singleton
+		}
 		this.canvas = document.getElementById("board") as HTMLCanvasElement
 		this.status = document.getElementById("status") as HTMLHeadingElement
 		this.width = this.canvas.width
@@ -20,9 +24,9 @@ export class Renderer {
 
 		this.crown = new Image()
 		this.crown.src = "./src/assets/crown.png"
+		Renderer.singleton = this
 	}
 
-	
 	drawBackground(board: Board) {
 		this.ctx.fillStyle = "#000"
 		this.ctx.fillRect(0, 0, this.width, this.height)
