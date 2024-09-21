@@ -2,6 +2,17 @@ import { Coordinate, Piece, Board } from "./Board"
 import { GameState, getOtherPlayer, isGameOver, Player } from "./GameState"
 import { getMovablePieces, getMoves } from "./Move"
 
+async function loadImage(src: string) {
+	return new Promise<HTMLImageElement>((resolve) => {
+			const crown = new Image()
+			crown.onload = () => resolve(crown)
+			crown.onerror = (e) => {throw new Error(e.toString())}
+			crown.src = src
+	})
+}
+
+const crown = await loadImage("./src/assets/crown.png")
+
 function renderBackground(ctx: CanvasRenderingContext2D, width: number, height: number, size: number, board: Board) {
 	ctx.fillStyle = "#000"
 	ctx.fillRect(0, 0, width, height)
@@ -28,12 +39,21 @@ function getColor(piece: Piece) {
 		case Piece.red:
 			return "#f00"
 		case Piece.blackKing:
-			return "#333"
+			return "#000"
 		case Piece.redKing:
-			return "#f55"
+			return "#f00"
 		default:
 			throw new Error("Invalid piece");
 	}
+}
+
+function isKing(piece: Piece) {
+	return piece === Piece.blackKing || piece === Piece.redKing
+}
+
+function renderCrown(ctx: CanvasRenderingContext2D, size: number, coordinate: Coordinate) {
+	const { x, y } = coordinateToPixel(coordinate, size)
+	ctx.drawImage(crown, x+6, y+6)
 }
 
 function renderPiece(ctx: CanvasRenderingContext2D, size: number, { i, j }: Coordinate, piece: Piece) {
@@ -53,6 +73,10 @@ function renderPiece(ctx: CanvasRenderingContext2D, size: number, { i, j }: Coor
 	ctx.fill()
 	ctx.stroke()
 	ctx.closePath()
+
+	if(isKing(piece)) {
+		renderCrown(ctx, size, { i, j })
+	}
 }
 
 function renderPieces(ctx: CanvasRenderingContext2D, size: number, board: Board) {
